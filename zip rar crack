@@ -1,0 +1,111 @@
+ZIP yoki RAR fayllarning parolini buzish uchun bir nechta usul mavjud. Quyida turli usullar va misollar keltirilgan.  
+
+---
+
+## **1. fcrackzip yordamida ZIP parolini buzish**  
+Agar sizda ZIP fayl bo‘lsa va uning parolini bilmasangiz, **`fcrackzip`** dasturidan foydalanishingiz mumkin.  
+
+### **1.1 Brute-Force (Hamma imkoniyatlarni sinash)**
+```bash
+fcrackzip -v -u -l 1-8 -c a1 <file.zip>
+```
+**Izoh**:  
+- `-v` → jarayonni ko‘rsatish.  
+- `-u` → to‘g‘ri parol topilganda tekshirish.  
+- `-l 1-8` → 1 dan 8 belgigacha bo‘lgan parollarni sinash.  
+- `-c a1` → harflar va raqamlarni sinash.  
+
+---
+
+### **1.2 Wordlist bilan sinash (Dictionary Attack)**
+```bash
+fcrackzip -v -D -p rockyou.txt -u <file.zip>
+```
+**Izoh**:  
+- `-D` → wordlistdan foydalanish.  
+- `-p rockyou.txt` → rockyou.txt faylidan parollarni tekshirish.  
+- `-u` → to‘g‘ri parol topilganda tekshirish.  
+
+Agar **parol 100% harflardan iborat** bo‘lsa, quyidagi buyruqni ishlatish mumkin:  
+```bash
+fcrackzip -v -u -l 1-6 -c a <file.zip>
+```
+
+---
+
+## **2. John The Ripper yordamida ZIP yoki RAR parolini buzish**
+**John The Ripper** yordamida parolni topish uchun avval hashni chiqarish kerak.  
+
+### **2.1 ZIP hashini chiqarish**
+```bash
+zip2john <file.zip> > hash.txt
+```
+### **2.2 John bilan parolni buzish**
+```bash
+john --wordlist=rockyou.txt hash.txt
+```
+Agar brute-force qilish kerak bo‘lsa:  
+```bash
+john --incremental hash.txt
+```
+
+---
+
+## **3. rarcrack yordamida RAR parolini buzish**  
+Agar sizda **RAR fayl** bo‘lsa, `rarcrack` dan foydalanishingiz mumkin.  
+
+### **3.1 RAR parolini brute-force bilan sinash**
+```bash
+rarcrack --type rar --threads 4 --charset numeric <file.rar>
+```
+**Izoh**:  
+- `--type rar` → RAR fayl ekanligini bildiradi.  
+- `--threads 4` → 4 ta parallel jarayonda ishlaydi.  
+- `--charset numeric` → faqat raqamlarni sinash.  
+
+Agar wordlist bilan sinash kerak bo‘lsa:  
+```bash
+rarcrack --type rar --wordlist=rockyou.txt <file.rar>
+```
+
+---
+
+## **4. Hashcat yordamida ZIP va RAR parolini buzish**  
+Agar sizda kuchli GPU bo‘lsa, **Hashcat** yordamida parolni tezroq topishingiz mumkin.  
+
+### **4.1 ZIP yoki RAR hashini chiqarish**
+**ZIP fayl hashini olish uchun**:  
+```bash
+zip2john file.zip > hash.txt
+```
+**RAR fayl hashini olish uchun**:  
+```bash
+rar2john file.rar > hash.txt
+```
+
+### **4.2 Hashcat yordamida parolni sinash**
+```bash
+hashcat -m 13600 -a 0 hash.txt rockyou.txt
+```
+**Izoh**:  
+- `-m 13600` → ZIP hash turi.  
+- `-a 0` → dictionary attack.  
+- `rockyou.txt` → wordlist fayli.  
+
+Agar **brute-force qilish** kerak bo‘lsa:  
+```bash
+hashcat -m 13600 -a 3 hash.txt ?d?d?d?d?d?d
+```
+**Izoh**:  
+- `?d` → har bir belgi raqam (0-9).  
+- `?d?d?d?d?d?d` → 6 xonali raqamlarni sinash.  
+
+---
+
+## **Xulosa**
+| Dastur | ZIP | RAR | Wordlist | Brute-force |
+|--------|----|----|----------|-------------|
+| **fcrackzip** | ✅ | ❌ | ✅ | ✅ |
+| **John The Ripper** | ✅ | ✅ | ✅ | ✅ |
+| **rarcrack** | ❌ | ✅ | ✅ | ✅ |
+| **Hashcat** | ✅ | ✅ | ✅ | ✅ |
