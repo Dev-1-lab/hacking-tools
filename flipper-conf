@@ -1,0 +1,74 @@
+It looks like you're working on a **cybersecurity challenge** where teams need to **access a web application's database** and retrieve credentials, then use a **Flipper Zero** device to enter a numerical code and unlock a door.  
+
+---
+
+## **1. Completing the Tasks & Retrieving the Code**
+During the challenge, teams must complete a set of tasks that will eventually lead them to a **numerical code** required to unlock the door. The code can be obtained through:  
+
+🔹 **Accessing a USB flash drive** (retrieved from a safe)  
+🔹 **Extracting data from a .pfx file**  
+🔹 **Breaking into the database to obtain login credentials**  
+🔹 **Analyzing vulnerabilities in the web application**  
+
+Once the required **numerical code** is found, it must be **entered into the Flipper Zero device**.
+
+---
+
+## **2. Entering the Code into Flipper Zero**
+Flipper Zero is a versatile hacking tool that can **simulate, clone, or transmit digital signals**. If you have obtained the required **numerical code**, you will need to enter it into Flipper Zero and use it to unlock the door.
+
+### **How to Enter and Use the Code:**
+1️⃣ **Turn on Flipper Zero**  
+2️⃣ **Go to the appropriate menu** (Sub-GHz, NFC, RFID, or Infrared, depending on how the door works)  
+3️⃣ **Enter the numerical code manually or emulate a saved signal**  
+4️⃣ **Send the signal or attempt to unlock the door**  
+
+If the door uses **NFC or RFID authentication**, Flipper Zero can **scan, clone, and emulate** these signals.
+
+---
+
+## **3. If the Door Uses NFC or RFID Authentication**
+If the door unlocks using an **NFC or RFID card**, you can try the following:  
+
+1️⃣ **Read the existing access card**  
+   - Navigate to **"NFC -> Read Card"**  
+   - If it's an RFID card: **"125kHz RFID -> Read"**  
+   - Save the UID and other data  
+
+2️⃣ **Clone the card using Flipper Zero**  
+   - Navigate to **"NFC -> Saved -> Select Card -> Emulate"**  
+   - If it's RFID: **"RFID -> Saved -> Select -> Emulate"**  
+
+3️⃣ **Use Flipper Zero to unlock the door**  
+   - If the door requires an NFC/RFID card, Flipper Zero can **emulate it** to gain access.  
+   - If the door operates via **sub-GHz radio frequency**, you may need to **transmit the correct signal**.  
+
+---
+
+## **4. If the Door Uses a Keypad or Digital Lock**
+Some doors require a **numeric code** to be entered manually. If you have retrieved this code, you can:  
+
+1️⃣ **Use Flipper Zero's BadUSB feature** to enter the code automatically  
+   - Go to **"BadUSB"**  
+   - Create a script to **input the code automatically**  
+
+2️⃣ **Transmit the code using Flipper Zero**  
+   - If the door works via **sub-GHz frequency**, you can attempt to transmit a recorded signal:
+     ```
+     Flipper -> Sub-GHz -> Saved Signals -> Select -> Transmit
+     ```
+   - If the door requires an **NFC or RFID card**, emulate it using:
+     ```
+     Flipper -> NFC -> Emulate
+     ```
+
+---
+
+## **Conclusion**
+🚀 **You must complete the security challenges to retrieve the required numerical code or credentials.**  
+🔑 **Once obtained, use Flipper Zero to enter or transmit the code and unlock the door.**  
+
+Would you like help with a specific part?  
+✅ **Extracting the code?**  
+✅ **Using Flipper Zero?**  
+✅ **Cloning NFC/RFID?**
