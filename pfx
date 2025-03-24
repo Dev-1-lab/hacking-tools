@@ -1,0 +1,122 @@
+Siz ta’riflagan vazifa **penetratsion test va kiberxavfsizlik muammolarini hal qilish** bo‘yicha **CTF (Capture The Flag)** yoki **Red Team mashg‘uloti** shaklida o‘tkazilayotgan ko‘rinadi.  
+
+Flesh xotirada mavjud **.pfx fayl** va boshqa topshiriqlarni tahlil qilish uchun quyidagi bosqichlarni bajarish kerak.  
+
+---
+
+## **1. .PFX Faylni Tahlil Qilish**
+**.pfx (PKCS#12 format)** fayli odatda **shaxsiy sertifikatlar va shaxsiy kalitlarni** o‘z ichiga oladi. Bu faylni ochish orqali **shifrlangan tarmoqga kirish, ma’lumotlar bazasiga ulanish yoki tizimga autentifikatsiya qilish** imkoniyatini olish mumkin.  
+
+### **.PFX faylni ochish uchun:**  
+1️⃣ **Fayl tarkibini tekshirish:**  
+   ```
+   openssl pkcs12 -info -in file.pfx
+   ```
+   Agar parol so‘ralsa va sizda parol bo‘lmasa, **brute-force qilish** kerak bo‘ladi.  
+
+2️⃣ **Shaxsiy kalitni chiqarib olish:**  
+   ```
+   openssl pkcs12 -in file.pfx -nocerts -out private.key -nodes
+   ```
+   Agar ushbu fayl SSH yoki HTTPS orqali autentifikatsiya uchun ishlatilayotgan bo‘lsa, siz tizimga kirish imkoniyatiga ega bo‘lishingiz mumkin.  
+
+3️⃣ **Sertifikatni chiqarib olish:**  
+   ```
+   openssl pkcs12 -in file.pfx -clcerts -nokeys -out certificate.crt
+   ```
+
+4️⃣ **Parolni buzish (Agar parolni bilmasangiz)**  
+   ```
+   john --format=pfx --wordlist=rockyou.txt file.pfx
+   ```
+
+Agar **.pfx** fayl ochilgandan so‘ng **ma’lumotlar bazasiga yoki tizimga kirish uchun kalitlarni bersa**, keyingi qadamda ushbu tizimlarga ulanish kerak bo‘ladi.
+
+---
+
+## **2. Flesh-xotiradagi boshqa fayllarni tekshirish**
+Flesh-kartadagi fayllar **foydali ma’lumotlarni** o‘z ichiga olishi mumkin.  
+
+1️⃣ **Flesh-xotira tarkibini tekshirish:**  
+   ```
+   ls -la /media/usb/
+   ```
+   yoki Windows’da:  
+   ```
+   dir E:\
+   ```
+
+2️⃣ **Yashirin fayllarni topish:**  
+   ```
+   ls -la /media/usb/
+   ```
+   yoki  
+   ```
+   attrib -h -s /s /d E:\*
+   ```
+
+3️⃣ **Flesh-xotirada zararli kod yoki backdoor bor-yo‘qligini tekshirish:**  
+   ```
+   clamscan -r /media/usb/
+   ```
+
+4️⃣ **Fayllarni metadata bo‘yicha tahlil qilish:**  
+   ```
+   exiftool /media/usb/*
+   ```
+
+---
+
+## **3. Veb-ilovaga kirish va topshiriqlarni bajarish**
+Agar .pfx fayl yoki flesh-kartadagi boshqa ma’lumotlar orqali **veb-ilovaga kirish uchun ma’lumotlar** topilgan bo‘lsa, quyidagilarni amalga oshirish kerak:  
+
+✅ **1. Agar sertifikat orqali autentifikatsiya qilinishi kerak bo‘lsa:**  
+   ```
+   curl --cert certificate.crt --key private.key https://example.com
+   ```
+
+✅ **2. Agar SSH orqali kirish kerak bo‘lsa:**  
+   ```
+   ssh -i private.key user@<IP>
+   ```
+
+✅ **3. Agar tizimga parol topilgan bo‘lsa, login qilish:**  
+   ```
+   https://example.com/login
+   ```
+
+✅ **4. Agar ma’lumotlar bazasiga ulanish kerak bo‘lsa:**  
+   ```
+   mysql -h <IP> -u admin -p
+   ```
+
+---
+
+## **4. Himoyalanish choralarini ko‘rish (Blue Team)**
+Agar **himoyalanish** vazifasi bo‘lsa, quyidagilarni bajarish kerak:  
+
+🚨 **1. PFX faylni himoya qilish:**  
+   - Agar .pfx ochiq parol bilan saqlangan bo‘lsa, uni **kuchli parol** bilan himoyalash kerak.  
+   - Sertifikatlarni xavfsiz joyda saqlash.  
+
+🚨 **2. Flesh-xotirada nozik ma’lumotlarni himoya qilish:**  
+   - **BitLocker yoki VeraCrypt** bilan shifrlash  
+   - Fayllarni tahlil qilish va zararli kod yo‘qligini tekshirish  
+
+🚨 **3. Ma’lumotlar bazasiga nozik ma’lumotlarni ochiq holatda saqlamaslik:**  
+   - SQL Injection hujumlariga qarshi chora ko‘rish  
+   - Parollarni hashlash (bcrypt, Argon2)  
+
+🚨 **4. SSH va boshqa tizimlarga kirishni cheklash:**  
+   - SSH uchun **faqat sertifikatlar orqali kirish**  
+   - **2FA (Ikki faktorli autentifikatsiya) yoqish**  
+
+---
+
+## **Xulosa**
+Bu topshiriq **hujum (Red Team)** yoki **himoya (Blue Team)** bo‘yicha bo‘lishi mumkin.  
+
+🔴 Agar **hujum tomonda bo‘lsangiz**, **.pfx faylni ochish, ma’lumotlarni olish va tizimga kirish** asosiy maqsad.  
+🔵 Agar **himoya tomonda bo‘lsangiz**, **barcha zaifliklarni bartaraf qilish, sertifikat va ma’lumotlarni xavfsiz saqlash** lozim.  
+
+Siz aynan qaysi bosqichni chuqurroq o‘rganmoqchisiz? 🚀
