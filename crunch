@@ -1,0 +1,111 @@
+## **Crunch yordamida parollarni yaratish misollari**  
+
+`crunch` - **Linux** va **Kali Linux** operatsion tizimlarida foydalaniladigan qudratli **parol generatori**. Bu vosita **turli uzunlikdagi** va **mavjud belgilarga asoslangan** parollarni yaratishga yordam beradi.  
+
+---
+
+## **1. Oddiy parollar yaratish**  
+
+### **📌 8 xonali parollar yaratish**  
+```bash
+crunch 8 8
+```
+**Izoh**:  
+- `8 8` – **8 ta belgi** uzunligidagi parollarni hosil qiladi  
+- Standart holda `crunch` barcha **kichik harflar** (`abcdefghijklmnopqrstuvwxyz`) bilan ishlaydi  
+
+---
+
+## **2. Muayyan belgilardan foydalanish**  
+
+### **📌 6-8 xonali parollar faqat raqamlar bilan**  
+```bash
+crunch 6 8 0123456789
+```
+**Izoh**:  
+- `6 8` – **minimum 6 ta va maksimum 8 ta belgi** uzunligida  
+- `0123456789` – **faqat raqamlar** ishlatiladi  
+
+---
+
+### **📌 Katta va kichik harflar bilan parollar yaratish**  
+```bash
+crunch 6 8 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+```
+**Izoh**:  
+- **Har xil uzunlikdagi** parollar (6-8 ta belgi)  
+- **Katta va kichik harflar** ishlatiladi  
+
+---
+
+### **📌 Maxsus belgilardan foydalanish**  
+```bash
+crunch 8 12 abcdef123456!@#
+```
+**Izoh**:  
+- `8 12` – **8 dan 12 tagacha belgidan iborat**  
+- **Harflar, raqamlar va maxsus belgilar** ishlatiladi (`!@#`)  
+
+---
+
+## **3. Maxsus naqshlardan foydalanish (`-t` opsiyasi)**  
+
+### **📌 Telefon raqam shaklida parollar yaratish**  
+```bash
+crunch 10 10 -t 998#######
+```
+**Izoh**:  
+- `998#######` – **O‘zbekistan telefon raqamlariga o‘xshash parollar**  
+- `#` – **istalgan raqam (0-9)** o‘rnini egallaydi  
+
+---
+
+### **📌 Parollarni oldindan belgilangan naqsh bo‘yicha yaratish**  
+```bash
+crunch 8 8 -t @@%%@@@@
+```
+**Izoh**:  
+- `@` – **kichik harf**  
+- `%` – **raqam**  
+- **Misol**: `ab45qwer`  
+
+---
+
+## **4. Parollarni faylga saqlash**  
+
+### **📌 Natijalarni `passwords.txt` fayliga yozish**  
+```bash
+crunch 6 8 0123456789 -o passwords.txt
+```
+**Izoh**:  
+- `-o passwords.txt` – **Natijalarni faylga saqlaydi**  
+
+---
+
+## **5. Parollarni `aircrack-ng` yoki `john the ripper` bilan ishlatish**  
+
+### **📌 Aircrack uchun wordlist yaratish**  
+```bash
+crunch 8 8 abc123 -o passlist.txt
+```
+Keyin `aircrack-ng` bilan ishlatish:  
+```bash
+aircrack-ng -w passlist.txt -b XX:XX:XX:XX:XX:XX handshake.cap
+```
+
+---
+
+## **6. Yirik wordlist yaratish va uni `gzip` bilan siqish**  
+```bash
+crunch 6 10 abc123 -o passwords.txt | gzip > passwords.gz
+```
+**Izoh**:  
+- **Katta hajmli** wordlistlarni siqib qo‘yish uchun **gzip** ishlatiladi  
+
+---
+
+## **Xulosa**  
+
+- **Crunch** - har qanday **maxsus naqshlar, uzunlik va belgilar** bo‘yicha parollar yaratishga yordam beradi.  
+- Parollarni **faylga saqlash**, keyinchalik **brute-force hujumlarida** foydalanish mumkin.  
+- **Telefon raqamlar, maxsus naqshlar va faqat raqamlardan iborat** parollarni yaratish imkoniyati mavjud.  
