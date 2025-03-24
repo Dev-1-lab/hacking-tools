@@ -1,0 +1,348 @@
+# **Nmap konfiguratsiyalari va misollari**  
+
+**Nmap** (Network Mapper) — bu tarmoqni skanerlash va xavfsizlik tekshiruvlari uchun ishlatiladigan eng mashhur vositalardan biri. Quyida **Nmap** ning turli **konfiguratsiyalari va amaliy misollar** keltirilgan.
+
+---
+
+## **1. Oddiy skanerlash (Basic Scans)**  
+
+### **📌 Oddiy port skanerlash**  
+```bash
+nmap 192.168.1.1
+```
+**Izoh**:  
+- **Nishon IP** yoki **domen** (`192.168.1.1` yoki `example.com`) kiritiladi  
+- **Faol bo‘lgan portlar** avtomatik aniqlanadi  
+
+### **📌 Ko‘proq portlarni tekshirish (1000 port o‘rniga 65535)**  
+```bash
+nmap -p- 192.168.1.1
+```
+**Izoh**:  
+- `-p-` – barcha **65535 ta portni** tekshiradi  
+
+---
+
+## **2. Portlarni tekshirish usullari**  
+
+### **📌 TCP SYN skanerlash (tez va yashirin usul)**  
+```bash
+nmap -sS 192.168.1.1
+```
+**Izoh**:  
+- `-sS` – **Stealth Scan** (yashirin skan)  
+- Firewallga tushmaslik uchun foydalidir  
+
+### **📌 TCP Connect skanerlash**  
+```bash
+nmap -sT 192.168.1.1
+```
+**Izoh**:  
+- `-sT` – to‘liq **TCP Connect** tekshiruvi  
+- Ruxsat yo‘q bo‘lsa, ushbu usul ishlatiladi  
+
+### **📌 UDP portlarni tekshirish**  
+```bash
+nmap -sU 192.168.1.1
+```
+**Izoh**:  
+- `-sU` – **UDP portlarini** aniqlash  
+- DNS (53), SNMP (161), DHCP (67) kabi UDP xizmatlarni topish uchun ishlatiladi  
+
+---
+
+## **3. Xizmatlar va operatsion tizimni aniqlash**  
+
+### **📌 Ochiq portlardagi xizmatlarni aniqlash**  
+```bash
+nmap -sV 192.168.1.1
+```
+**Izoh**:  
+- `-sV` – har bir portda ishlayotgan **xizmat versiyasini** topadi  
+
+### **📌 Operatsion tizimni aniqlash**  
+```bash
+nmap -O 192.168.1.1
+```
+**Izoh**:  
+- `-O` – **OS (operatsion tizim)** ni aniqlaydi  
+- Masalan, **Windows yoki Linux** ekanligini topish  
+
+### **📌 Xizmat va OS haqida qo‘shimcha ma’lumot olish**  
+```bash
+nmap -A 192.168.1.1
+```
+**Izoh**:  
+- `-A` – `-sV` va `-O` ni birlashtirib, ko‘proq ma’lumot beradi  
+
+---
+
+## **4. Muayyan portlarni skanerlash**  
+
+### **📌 Faqat bitta portni tekshirish**  
+```bash
+nmap -p 22 192.168.1.1
+```
+**Izoh**:  
+- `-p 22` – **faqat SSH (22) portini** tekshiradi  
+
+### **📌 Ko‘p portlarni birga tekshirish**  
+```bash
+nmap -p 22,80,443,3306 192.168.1.1
+```
+**Izoh**:  
+- `-p 22,80,443,3306` – **SSH, HTTP, HTTPS, MySQL** portlarini tekshiradi  
+
+### **📌 Portlar oralig‘ini tekshirish**  
+```bash
+nmap -p 1-1000 192.168.1.1
+```
+**Izoh**:  
+- `-p 1-1000` – **faqat 1 dan 1000 gacha** bo‘lgan portlarni skanerlash  
+
+---
+
+## **5. Shubhali faollikdan qochish (Stealth Scanning)**  
+
+### **📌 TCP paket hajmini o‘zgartirib firewalldan qochish**  
+```bash
+nmap --mtu 16 192.168.1.1
+```
+**Izoh**:  
+- `--mtu 16` – paket hajmini o‘zgartirib **ids/firewallni aldash**  
+
+### **📌 IP spoofing qilish**  
+```bash
+nmap -S 192.168.1.100 192.168.1.1
+```
+**Izoh**:  
+- `-S 192.168.1.100` – soxta IP orqali skan qilish  
+
+### **📌 Paketlarni sekin yuborish (IDS'ni chetlab o‘tish)**  
+```bash
+nmap --scan-delay 500ms 192.168.1.1
+```
+**Izoh**:  
+- `--scan-delay 500ms` – har bir skan orasida **500ms kechikish** beradi  
+
+---
+
+## **6. Firewall va IDS/IPS tizimlarini bypass qilish**  
+
+### **📌 Fragmented paketlar orqali bypass qilish**  
+```bash
+nmap -f 192.168.1.1
+```
+**Izoh**:  
+- `-f` – paketlarni **kichik fragmentlarga** ajratadi  
+
+### **📌 Random portlarni ishlatish (antiban)**  
+```bash
+nmap --source-port 53 192.168.1.1
+```
+**Izoh**:  
+- `--source-port 53` – firewall **DNS portidan (53) skan** qilayotgandek qiladi  
+
+---
+
+## **7. DoS va kuchli yuk skanerlash (Aggressive Scanning)**  
+
+### **📌 Maksimal tezlikda barcha portlarni tekshirish**  
+```bash
+nmap -T5 -p- 192.168.1.1
+```
+**Izoh**:  
+- `-T5` – eng **tezkor skan rejimi**  
+- `-p-` – barcha **65535 ta portni** tekshiradi  
+
+### **📌 Agresiv tekshiruv (Exploit oldidan foydalanish)**  
+```bash
+nmap -A -T4 192.168.1.1
+```
+**Izoh**:  
+- `-A` – barcha ma’lumotlarni olishga urinish  
+- `-T4` – **tez skan** (lekin IDS e’tiborini tortishi mumkin)  
+
+---
+
+## **8. Natijalarni saqlash (Logging & Reporting)**  
+
+### **📌 Natijalarni faylga saqlash (TXT)**  
+```bash
+nmap -oN results.txt 192.168.1.1
+```
+**Izoh**:  
+- `-oN results.txt` – natijalarni **txt faylga** yozish  
+
+### **📌 Natijalarni XML formatda saqlash**  
+```bash
+nmap -oX results.xml 192.168.1.1
+```
+**Izoh**:  
+- `-oX results.xml` – natijalarni **XML formatda** saqlaydi  
+
+### **📌 Natijalarni barcha formatlarda saqlash**  
+```bash
+nmap -oA full_scan 192.168.1.1
+```
+**Izoh**:  
+- `-oA full_scan` – **Nmap, XML va Grep** formatda natijalarni saqlaydi  
+
+---
+
+## **Zaifliklarni topish uchun Nmap yordamida skanerlash**  
+
+Nmap **zaifliklarni skanerlash** va tarmoq xizmatlarining xavfsizligini tekshirish uchun **NSE (Nmap Scripting Engine)** dan foydalanadi. Quyida **zaifliklarni aniqlash uchun turli usullar** va misollar berilgan.
+
+---
+
+## **1. NSE skriptlar yordamida zaifliklarni aniqlash**  
+
+Nmap **NSE (Nmap Scripting Engine)** ni qo‘llab-quvvatlaydi. Ushbu skriptlar yordamida zaif xizmatlarni topish mumkin.  
+
+### **📌 Xizmatlar va ularning zaifliklarini tekshirish**  
+```bash
+nmap --script=vuln 192.168.1.1
+```
+**Izoh**:  
+- `--script=vuln` – **zaifliklarni skanerlash** uchun maxsus skriptlar ishga tushadi  
+
+---
+
+## **2. Muayyan zaifliklarni tekshirish**  
+
+### **📌 SMB protokolidagi zaifliklarni topish**  
+```bash
+nmap --script=smb-vuln* -p 445 192.168.1.1
+```
+**Izoh**:  
+- `smb-vuln*` – **SMB (Server Message Block)** bilan bog‘liq barcha zaifliklarni tekshiradi  
+- `-p 445` – **SMB porti** (445) ni tekshiradi  
+
+✔ **Misol:** **EternalBlue (MS17-010) exploit tekshiruvi**  
+```bash
+nmap --script=smb-vuln-ms17-010 -p 445 192.168.1.1
+```
+Bu Windows’da mashhur **EternalBlue** zaifligini aniqlaydi.  
+
+---
+
+### **📌 HTTP va veb-server zaifliklarini aniqlash**  
+```bash
+nmap --script=http-vuln* -p 80,443 192.168.1.1
+```
+**Izoh**:  
+- `http-vuln*` – **veb-serverlar uchun zaifliklarni** tekshiradi  
+- `-p 80,443` – **HTTP va HTTPS** portlarini ko‘rib chiqadi  
+
+✔ **Misol:** **Apache Struts zaifligini topish**  
+```bash
+nmap --script=http-vuln-cve2017-5638 -p 80 192.168.1.1
+```
+Bu **Apache Struts** dagi **RCE (Remote Code Execution)** zaifligini topadi.
+
+---
+
+### **📌 FTP serverdagi zaifliklarni aniqlash**  
+```bash
+nmap --script=ftp-vuln-cve2010-4221 -p 21 192.168.1.1
+```
+**Izoh**:  
+- `ftp-vuln-cve2010-4221` – eski **ProFTPD** serverlarida mavjud **RCE** zaifligini tekshiradi  
+- `-p 21` – **FTP porti** (21) ni tekshiradi  
+
+---
+
+## **3. SQL Injection zaifliklarini tekshirish**  
+```bash
+nmap --script=http-sql-injection -p 80,443 192.168.1.1
+```
+**Izoh**:  
+- `http-sql-injection` – **veb-saytlar uchun SQL Injection** zaifliklarini tekshiradi  
+
+✔ **Misol:** **Saytning SQL Injection’ga moyilligini tekshirish**  
+```bash
+nmap -p 80 --script=http-sql-injection example.com
+```
+
+---
+
+## **4. Zaif parollarni topish (Brute-force skan)**  
+
+### **📌 SSH server uchun brute-force sinov**  
+```bash
+nmap --script=ssh-brute -p 22 192.168.1.1
+```
+**Izoh**:  
+- `ssh-brute` – **SSH login parollarini taxmin qilish** uchun bruteforce qiladi  
+
+✔ **Misol:** **FTP serverdagi zaif parollarni topish**  
+```bash
+nmap --script=ftp-brute -p 21 192.168.1.1
+```
+
+---
+
+## **5. DNS va tarmoq hujumlari zaifliklarini aniqlash**  
+
+### **📌 DNS Serverdagi zaifliklarni tekshirish**  
+```bash
+nmap --script=dns-zone-transfer -p 53 example.com
+```
+**Izoh**:  
+- `dns-zone-transfer` – **DNS zone transfer** zaifligini tekshiradi  
+
+✔ **Misol:** **BIND DNS serveridagi zaifliklarni aniqlash**  
+```bash
+nmap --script=dns-vuln -p 53 192.168.1.1
+```
+
+---
+
+## **6. DoS (Denial of Service) zaifliklarini topish**  
+
+### **📌 FTP serverga DoS hujum imkoniyatini tekshirish**  
+```bash
+nmap --script=ftp-proftpd-backdoor -p 21 192.168.1.1
+```
+✔ **Misol:** **SIP VoIP serverga DoS hujumlarini aniqlash**  
+```bash
+nmap --script=voip-info -p 5060 192.168.1.1
+```
+
+---
+
+## **7. O‘chirilgan yoki yashirin xizmatlarni topish**  
+
+### **📌 Yashirin SSH yoki Telnet xizmatlarini aniqlash**  
+```bash
+nmap --script=ssh-hostkey,telnet-encryption -p 22,23 192.168.1.1
+```
+
+✔ **Misol:** **Yashirin veb-serverlar yoki admin panellarni topish**  
+```bash
+nmap --script=http-enum -p 80,443 192.168.1.1
+```
+
+---
+
+## **8. Olingan natijalarni faylga saqlash**  
+
+### **📌 Oddiy faylga saqlash**  
+```bash
+nmap --script=vuln -oN vuln_scan.txt 192.168.1.1
+```
+✔ **Misol:** **Natijalarni JSON yoki XML formatda saqlash**  
+```bash
+nmap --script=vuln -oX vuln_scan.xml 192.168.1.1
+```
+
+---
+
+## **Xulosa**  
+
+- **Nmap** yordamida **zaif xizmatlar, ochiq portlar, ekspluatlar** haqida **batafsil ma’lumot olish** mumkin.  
+- **NSE skriptlar** orqali **xavfsizlik tekshiruvlari va zaifliklarni skanerlash** osonlashadi.  
+- **Firewall va IDS/IPS** tizimlarini aldash uchun **maxsus parametrlar** qo‘llash mumkin.  
+
+Sizga yana qanday **maxsus skan usullari yoki zaiflik tekshiruvlari** kerak? 😊
