@@ -1,0 +1,129 @@
+### **Gobuster konfiguratsiyalari bilan misollar**  
+
+**Gobuster** – bu kataloglarni, fayllarni va subdomenlarni bruteforce qilish uchun ishlatiladigan tezkor va kuchli vosita. Quyida **Gobuster** ning turli usullarda ishlatilishi uchun **ko‘plab misollar** keltirilgan.
+
+---
+
+## **1. Katalog va fayllarni bruteforce qilish**  
+Bu usul orqali ma’lum bir **veb-server** dagi yashirin katalog va fayllarni topish mumkin.
+
+### **📌 Oddiy katalog qidirish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+```
+**Izoh**:  
+- `dir` – katalog qidirish rejimi  
+- `-u` – nishon URL  
+- `-w` – so‘zlar ro‘yxati  
+
+### **📌 Faqat aniq kengaytmalarga ega fayllarni qidirish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,html,txt
+```
+**Izoh**:  
+- `-x` – qidiriladigan fayl kengaytmalari (PHP, HTML, TXT)  
+
+### **📌 Muayyan status kodlarni yashirish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --exclude-status 404
+```
+**Izoh**:  
+- `--exclude-status 404` – 404 javob kodini yashiradi  
+
+### **📌 Maxsus HTTP header qo‘shish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -H "User-Agent: Mozilla/5.0"
+```
+**Izoh**:  
+- `-H` – HTTP sarlavha (header) qo‘shish  
+
+---
+
+## **2. Subdomenlarni bruteforce qilish**  
+Subdomenlarni topish uchun `dns` rejimi ishlatiladi.
+
+### **📌 Oddiy subdomen qidirish**  
+```bash
+gobuster dns -d target.com -w /usr/share/wordlists/subdomains-top1million-5000.txt
+```
+**Izoh**:  
+- `dns` – subdomenlarni qidirish rejimi  
+- `-d` – nishon domen  
+- `-w` – so‘zlar ro‘yxati  
+
+### **📌 Faqat aniq IP manzillarga javob qaytargan subdomenlarni chiqarish**  
+```bash
+gobuster dns -d target.com -w /usr/share/wordlists/subdomains-top1million-5000.txt --resolve
+```
+**Izoh**:  
+- `--resolve` – faqat faol subdomenlarni chiqarish  
+
+---
+
+## **3. Veb-serverdagi yashirin fayllarni qidirish**  
+Ba’zan **.htaccess**, **.git**, **backup**, **admin** kabi maxfiy fayllar yashirin bo‘lishi mumkin.
+
+### **📌 Maxsus fayllarni topish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x bak,old,zip,tar.gz
+```
+**Izoh**:  
+- `.bak`, `.old`, `.zip`, `.tar.gz` kengaytmalariga ega **zaxira fayllarni** topadi  
+
+---
+
+## **4. Veb-serverning VHost konfiguratsiyalarini bruteforce qilish**  
+Ba’zi saytlarda subdomen o‘rniga **virtual hostlar** bo‘lishi mumkin. Ularni topish uchun:
+
+### **📌 Virtual hostlarni bruteforce qilish**  
+```bash
+gobuster vhost -u http://target.com -w /usr/share/wordlists/virtual-host-scanning.txt
+```
+**Izoh**:  
+- `vhost` – virtual hostlarni qidirish rejimi  
+
+### **📌 Maxsus Host sarlavhasi bilan VHostlarni qidirish**  
+```bash
+gobuster vhost -u http://target.com -w /usr/share/wordlists/virtual-host-scanning.txt -H "Host: target.com"
+```
+**Izoh**:  
+- `-H` – HTTP header sarlavhasi  
+
+---
+
+## **5. Brute-force tekshirish tezligini oshirish va kamaytirish**  
+Gobuster’da **ishlash tezligini** nazorat qilish mumkin.
+
+### **📌 Tezlikni oshirish**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 50
+```
+**Izoh**:  
+- `-t 50` – 50 ta parallel so‘rov yuboradi  
+
+### **📌 Tezlikni kamaytirish (DDoS yoki bloklanish xavfini oldini olish)**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 5
+```
+**Izoh**:  
+- `-t 5` – faqat 5 ta parallel so‘rov yuboradi  
+
+---
+
+## **6. Gobuster natijalarini faylga saqlash**  
+Gobuster natijalarini **log faylga** saqlash mumkin.
+
+### **📌 Natijalarni JSON formatida saqlash**  
+```bash
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o results.json -f
+```
+**Izoh**:  
+- `-o results.json` – natijalarni `results.json` fayliga saqlaydi  
+- `-f` – natijalarni doimiy ravishda faylga yozib boradi  
+
+---
+
+## **Xulosa**  
+**Gobuster** – bu tezkor va samarali bruteforce vositasi bo‘lib, kataloglar, subdomenlar, yashirin fayllar va virtual hostlarni topishda juda foydali. Yuqoridagi misollardan foydalanib, siz turli **hujum ssenariylarini** sinab ko‘rishingiz mumkin.  
+
+Sizga yana qaysi Gobuster parametrlari yoki amaliyotlari kerak? 😊
